@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<launch>
+  <arg default="scan" name="frame_id"/>
+  <arg default="192.168.2.4" name="device_ip"/>
+
+  <!-- Parameters for SmartRunner3D Stereo -->
+
+  <arg default="AutoTrigger" name="trigger_source"/>
+  <!-- Valid values: AutoTrigger, Line1, Software -->
+
+  <arg default="10.0" name="auto_trigger_rate"/>
+  <!-- Valid values: 1.0 - 10.0 -->
+
+  <arg default="true" name="trigger_enable"/>
+  <!-- Valid values: true or false -->
+
+  <arg default="3000" name="exposure_time"/>
+  <!-- Valid values: 10 - 10000 -->
+
+  <arg default="100" name="gain"/>
+  <!-- Valid values: 0 - 480 -->
+
+  <arg default="20" name="uniqueness"/>
+  <!-- Valid values: 0 - 100 -->
+
+  <arg default="DisparityC" name="output_mode"/>
+  <!-- Valid values: DisparityC -->
+
+  <!-- ros node -->
+  <node exec="smartrunner_3d_stereo_node" name="smartrunner_3d_stereo_node" output="screen" pkg="pepperl_fuchs_smartrunner" respawn="true">
+    <param name="frame_id" value="$(var frame_id)"/>
+    <param name="device_ip" value="$(var device_ip)"/>
+    <param name="trigger_source" value="$(var trigger_source)"/>
+    <param name="auto_trigger_rate" value="$(var auto_trigger_rate)"/>
+    <param name="trigger_enable" value="$(var trigger_enable)"/>
+    <param name="exposure_time" value="$(var exposure_time)"/>
+    <param name="gain" value="$(var gain)"/>
+    <param name="uniqueness" value="$(var uniqueness)"/>
+    <param name="output_mode" value="$(var output_mode)"/>
+  </node>
+
+  <!-- RVIZ -->
+  <node args="-d $(find-pkg-share pepperl_fuchs_smartrunner)/rviz/PointCloud2.rviz" exec="rviz2" name="$(anon rviz2)" output="screen" pkg="rviz2" respawn="false"/>
+
+</launch>

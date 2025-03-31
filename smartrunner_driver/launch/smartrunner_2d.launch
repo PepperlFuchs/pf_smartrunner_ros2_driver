@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<launch>
+  <arg default="scan" name="frame_id"/>
+  <arg default="192.168.2.4" name="device_ip"/>
+
+  <!-- Parameters for SmartRunner -->
+
+  <arg default="1" name="autotrigger_enable"/>
+  <!-- Valid values: 1 or 0 -->
+
+  <arg default="1000" name="exposure_time"/>
+  <!-- Valid values: 1 - 3000 -->
+
+  <arg default="1" name="use_manual_exposure_time"/>
+  <!-- Valid values: 1 or 0 -->
+
+  <arg default="100" name="flash_time"/>
+  <!-- Valid values: 1 or 10000	-->
+
+  <arg default="45" name="object_contrast"/>
+  <!-- Valid values: 1 - 100 -->
+
+  <arg default="-50" name="roi_min_x"/>
+  <!-- Valid values: -3200 - 3200 -->
+
+  <arg default="50" name="roi_max_x"/>
+  <!-- Valid values: -3200 - 3200 -->
+
+  <arg default="100" name="roi_min_z"/>
+  <!-- Valid values: 1 - 3200 -->
+
+  <arg default="350" name="roi_max_z"/>
+  <!-- Valid values: 1 - 3200 -->
+
+  <arg default="0" name="image_transfer_active"/>
+  <!-- Valid values: 1 or 0 -->
+
+  <!-- ros node -->
+  <node exec="smartrunner_2d_node" name="smartrunner_2d_node" output="screen" pkg="pepperl_fuchs_smartrunner" respawn="true">
+    <param name="frame_id" value="$(var frame_id)"/>
+    <param name="device_ip" value="$(var device_ip)"/>
+    <param name="autotrigger_enable" value="$(var autotrigger_enable)"/>
+    <param name="exposure_time" value="$(var exposure_time)"/>
+    <param name="use_manual_exposure_time" value="$(var use_manual_exposure_time)"/>
+    <param name="flash_time" value="$(var flash_time)"/>
+    <param name="object_contrast" value="$(var object_contrast)"/>
+    <param name="roi_min_x" value="$(var roi_min_x)"/>
+    <param name="roi_max_x" value="$(var roi_max_x)"/>
+    <param name="roi_min_z" value="$(var roi_min_z)"/>
+    <param name="roi_max_z" value="$(var roi_max_z)"/>
+    <param name="image_transfer_active" value="$(var image_transfer_active)"/>
+  </node>
+
+  <!-- RVIZ -->
+  <node args="-d $(find-pkg-share pepperl_fuchs_smartrunner)/rviz/PointCloud2.rviz" exec="rviz2" name="$(anon rviz2)" output="screen" pkg="rviz2" respawn="false"/>
+
+</launch>

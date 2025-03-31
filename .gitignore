@@ -1,0 +1,5 @@
+# Ignore VsxSdk
+/smartrunner_driver/lib/VsxSdk
+
+# ignore Clion files
+.idea
