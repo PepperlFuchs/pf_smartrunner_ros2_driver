@@ -27,6 +27,6 @@ set(VSX_SDK_PATH "${CMAKE_CURRENT_LIST_DIR}/../lib/VsxSdk")
 set(VSX_SDK_LIB_PATH "${VSX_SDK_PATH}/C/lib/${OS}-${CPU}/")
 set(VSX_SDK_INCLUDE_PATH "${VSX_SDK_PATH}/C/include/")
 
-set_target_properties(VsxSdk PROPERTIES IMPORTED_LOCATION "${VSX_SDK_LIB_PATH}/PF.VsxProtocolDriver.WrapperNE.so")
+set_target_properties(VsxSdk PROPERTIES IMPORTED_LOCATION "${VSX_SDK_LIB_PATH}PF.VsxProtocolDriver.Wrapper.so")
 target_include_directories(VsxSdk INTERFACE "${VSX_SDK_INCLUDE_PATH}")
 
