@@ -19,6 +19,7 @@
 
 #define SR3D_STEREO_SETTINGS_VER 2
 #define SR3D_STEREO_CONFIG_VER 4
+//#define SR3D_PARAMETER_READBACK 1
 
 namespace pepperl_fuchs
 {
@@ -151,6 +152,15 @@ void SmartRunner3dStereoNode::setup_vsx(VsxSystemHandle *vsx)
     SR3D_STEREO_CONFIG_VER, "SGBMEnableMedian", median_));
   test(vsx_SetSingleParameterValue(vsx, SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER,
     "SGBMBinning", binning_.c_str()));
+#ifdef SR3D_PARAMETER_READBACK
+  const char* actBinning;
+  test(vsx_GetSingleParameterValue(vsx, SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER,
+    "SGBMBinning", &actBinning));
+  if (0!=binning_.compare(actBinning)) {
+    RCLCPP_FATAL(get_logger(), "Failed to set parameter: set '%s' but read back '%s'", binning_.c_str(), actBinning);
+    throw std::runtime_error("Failed to set parameter");
+  }
+#endif
   test(vsx_SetSingleParameterValue(vsx, SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER,
     "OutputMode", output_mode_.c_str()));
 }
