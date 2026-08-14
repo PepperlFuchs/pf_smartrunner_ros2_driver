@@ -33,6 +33,7 @@ private:
   int uniqueness_ = 0;
   bool median_ = false;
   std::string output_mode_ = "";
+  std::string binning_ = "";
 
   std::shared_ptr<rclcpp::ParameterEventHandler> param_subscriber_;
   rclcpp::ParameterCallbackHandle::SharedPtr exposure_time_cb_;

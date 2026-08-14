@@ -26,6 +26,9 @@
   <arg default="DisparityC" name="output_mode"/>
   <!-- Valid values: DisparityC -->
 
+  <arg default="None" name="binning"/>
+  <!-- Valid values: None, Bin2x2 -->
+
   <!-- ros node -->
   <node exec="smartrunner_3d_stereo_node" name="smartrunner_3d_stereo_node" output="screen" pkg="pepperl_fuchs_smartrunner" respawn="true">
     <param name="frame_id" value="$(var frame_id)"/>
@@ -37,6 +40,7 @@
     <param name="gain" value="$(var gain)"/>
     <param name="uniqueness" value="$(var uniqueness)"/>
     <param name="output_mode" value="$(var output_mode)"/>
+    <param name="binning" value="$(var binning)"/>
   </node>
 
   <!-- RVIZ -->

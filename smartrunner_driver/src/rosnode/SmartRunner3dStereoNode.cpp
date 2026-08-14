@@ -17,6 +17,9 @@
 
 #include "Utilities.hpp"
 
+#define SR3D_STEREO_SETTINGS_VER 2
+#define SR3D_STEREO_CONFIG_VER 4
+
 namespace pepperl_fuchs
 {
 SmartRunner3dStereoNode::SmartRunner3dStereoNode()
@@ -37,6 +40,7 @@ SmartRunner3dStereoNode::SmartRunner3dStereoNode()
       "Confidence threshold for 3d estimation. Higher values lead to more discarded points."},
       IRange{0, 100, 1});
   declparam(this, "median", median_, Description{"Activates noise filtering on 3d points"});
+  declparam(this, "binning", binning_, Description{"Configures binning of 3d points"});
 
   get_parameter("trigger_source", trigger_source_);
   get_parameter("output_mode", output_mode_);
@@ -46,6 +50,7 @@ SmartRunner3dStereoNode::SmartRunner3dStereoNode()
   get_parameter("gain", gain_);
   get_parameter("uniqueness", uniqueness_);
   get_parameter("median", median_);
+  get_parameter("binning", binning_);
 
   RCLCPP_INFO(get_logger(), "trigger_source: %s", trigger_source_.c_str());
   RCLCPP_INFO(get_logger(), "auto_trigger_rate: %f", auto_trigger_rate_);
@@ -55,15 +60,15 @@ SmartRunner3dStereoNode::SmartRunner3dStereoNode()
   RCLCPP_INFO(get_logger(), "uniqueness: %d", uniqueness_);
   RCLCPP_INFO(get_logger(), "output_mode: %s", output_mode_.c_str());
   RCLCPP_INFO(get_logger(), "median: %d", median_);
+  RCLCPP_INFO(get_logger(), "binning: %s", binning_.c_str());
 
   param_subscriber_ = std::make_shared<rclcpp::ParameterEventHandler>(this);
 
   exposure_time_cb_ = param_subscriber_->add_parameter_callback("exposure_time",
       [this](const rclcpp::Parameter & p) {
         const int value = p.as_int();
-        VsxStatusCode status = vsx_SetSingleParameterValueInt32(get_vsx(), 1, "Base", 1,
-        "ExposureTime",
-        value);
+        VsxStatusCode status = vsx_SetSingleParameterValueInt32(get_vsx(),
+          SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER, "ExposureTime", value);
         if (status != VSX_STATUS_SUCCESS) {
           RCLCPP_ERROR(get_logger(), "Could not set exposure time to %d", value);
         } else {exposure_time_ = value;}
@@ -72,8 +77,8 @@ SmartRunner3dStereoNode::SmartRunner3dStereoNode()
   gain_cb_ = param_subscriber_->add_parameter_callback("gain",
       [this](const rclcpp::Parameter & p) {
         const int value = p.as_int();
-        VsxStatusCode status = vsx_SetSingleParameterValueInt32(get_vsx(), 1, "Base", 1, "Gain",
-        value);
+        VsxStatusCode status = vsx_SetSingleParameterValueInt32(get_vsx(),
+          SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER, "Gain", value);
         if (status != VSX_STATUS_SUCCESS) {
           RCLCPP_ERROR(get_logger(), "Could not set gain to %d", value);
         } else {gain_ = value;}
@@ -82,8 +87,8 @@ SmartRunner3dStereoNode::SmartRunner3dStereoNode()
   uniqueness_cb_ = param_subscriber_->add_parameter_callback("uniqueness",
       [this](const rclcpp::Parameter & p) {
         const int value = p.as_int();
-        VsxStatusCode status = vsx_SetSingleParameterValueInt32(get_vsx(), 1, "Base", 1,
-        "SGBMUniqueness", value);
+        VsxStatusCode status = vsx_SetSingleParameterValueInt32(get_vsx(),
+          SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER, "SGBMUniqueness", value);
         if (status != VSX_STATUS_SUCCESS) {
           RCLCPP_ERROR(get_logger(), "Could not set uniqueness threshold to %d", value);
         } else {uniqueness_ = value;}
@@ -92,8 +97,8 @@ SmartRunner3dStereoNode::SmartRunner3dStereoNode()
   median_cb_ = param_subscriber_->add_parameter_callback("median",
       [this](const rclcpp::Parameter & p) {
         const bool value = p.as_bool();
-        VsxStatusCode status = vsx_SetSingleParameterValueInt32(get_vsx(), 1, "Base", 1,
-        "SGBMEnableMedian", value);
+        VsxStatusCode status = vsx_SetSingleParameterValueInt32(get_vsx(),
+          SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER, "SGBMEnableMedian", value);
         if (status != VSX_STATUS_SUCCESS) {
           RCLCPP_ERROR(get_logger(), "Could not set median filter flag to %s",
           value ? "true" : "false");
@@ -104,8 +109,8 @@ SmartRunner3dStereoNode::SmartRunner3dStereoNode()
     param_subscriber_->add_parameter_callback("auto_trigger_rate",
       [this](const rclcpp::Parameter & p) {
         const double value = p.as_double();
-        VsxStatusCode status = vsx_SetSingleParameterValueDouble(get_vsx(), 1, "Base", 1,
-        "AutoTriggerFrameRate", value);
+        VsxStatusCode status = vsx_SetSingleParameterValueDouble(get_vsx(),
+          SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER, "AutoTriggerFrameRate", value);
         if (status != VSX_STATUS_SUCCESS) {
           RCLCPP_ERROR(get_logger(), "Could not set auto trigger frame rate to %f", value);
         } else {auto_trigger_rate_ = value;}
@@ -128,16 +133,26 @@ void SmartRunner3dStereoNode::setup_vsx(VsxSystemHandle *vsx)
       }
     };
 
-  test(vsx_SetSingleParameterValue(vsx, 1, "Base", 1, "TriggerSource", trigger_source_.c_str()));
-  test(vsx_SetSingleParameterValueDouble(vsx, 1, "Base", 1, "AutoTriggerFrameRate",
-      auto_trigger_rate_));
-  test(vsx_SetSingleParameterValue(vsx, 1, "Base", 1, "TriggerEnabled", "0"));
-  test(vsx_SetSingleParameterValueInt32(vsx, 1, "Base", 1, "TriggerEnabled", trigger_enable_));
-  test(vsx_SetSingleParameterValueInt32(vsx, 1, "Base", 1, "ExposureTime", exposure_time_));
-  test(vsx_SetSingleParameterValueInt32(vsx, 1, "Base", 1, "Gain", gain_));
-  test(vsx_SetSingleParameterValueInt32(vsx, 1, "Base", 1, "SGBMUniqueness", uniqueness_));
-  test(vsx_SetSingleParameterValueInt32(vsx, 1, "Base", 1, "SGBMEnableMedian", median_));
-  test(vsx_SetSingleParameterValue(vsx, 1, "Base", 1, "OutputMode", output_mode_.c_str()));
+  test(vsx_SetSingleParameterValue(vsx, SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER,
+    "TriggerSource", trigger_source_.c_str()));
+  test(vsx_SetSingleParameterValueDouble(vsx, SR3D_STEREO_SETTINGS_VER, "Base",
+     SR3D_STEREO_CONFIG_VER, "AutoTriggerFrameRate", auto_trigger_rate_));
+  test(vsx_SetSingleParameterValue(vsx, SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER,
+    "TriggerEnabled", "0"));
+  test(vsx_SetSingleParameterValueInt32(vsx, SR3D_STEREO_SETTINGS_VER, "Base",
+    SR3D_STEREO_CONFIG_VER, "TriggerEnabled", trigger_enable_));
+  test(vsx_SetSingleParameterValueInt32(vsx, SR3D_STEREO_SETTINGS_VER, "Base",
+    SR3D_STEREO_CONFIG_VER, "ExposureTime", exposure_time_));
+  test(vsx_SetSingleParameterValueInt32(vsx, SR3D_STEREO_SETTINGS_VER, "Base",
+    SR3D_STEREO_CONFIG_VER, "Gain", gain_));
+  test(vsx_SetSingleParameterValueInt32(vsx, SR3D_STEREO_SETTINGS_VER, "Base",
+    SR3D_STEREO_CONFIG_VER, "SGBMUniqueness", uniqueness_));
+  test(vsx_SetSingleParameterValueInt32(vsx, SR3D_STEREO_SETTINGS_VER, "Base",
+    SR3D_STEREO_CONFIG_VER, "SGBMEnableMedian", median_));
+  test(vsx_SetSingleParameterValue(vsx, SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER,
+    "SGBMBinning", binning_.c_str()));
+  test(vsx_SetSingleParameterValue(vsx, SR3D_STEREO_SETTINGS_VER, "Base", SR3D_STEREO_CONFIG_VER,
+    "OutputMode", output_mode_.c_str()));
 }
 
 void SmartRunner3dStereoNode::on_data_received(VsxDataContainerHandle *dc)
