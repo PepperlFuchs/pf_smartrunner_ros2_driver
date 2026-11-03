@@ -9,13 +9,13 @@ The following Pepperl+Fuchs sensors are supported by this ROS driver.
 
 ### SmartRunner 3-D Explorer
 
-The SmartRunner Explorer generates high-precision 3-D point cloud images in addition to 2-D images.
-It is optionally available with stereo vision technology or time-of-flight (ToF) technology.
+The SmartRunner 3-D Explorer generates high-precision 3-D point cloud images in addition to 2-D images.
+It is available with stereo vision technology.
 As a raw data sensor, the vision sensor is suitable for a wide variety of applications.
 
 Official Website: https://www.pepperl-fuchs.com/global/en/smartrunner_3-d.htm
 
-Datasheet (en): https://files.pepperl-fuchs.com/webcat/navi/productInfo/doct/tdoct7242a_eng.pdf
+Datasheet (en): https://files.pepperl-fuchs.com/webcat/navi/productInfo/pds/70123992-100000_eng.pdf
 
 ### SmartRunner Explorer
 
@@ -25,16 +25,16 @@ of area images via the integrated area illumination. In the light section method
 object. This is captured at a specific angle by a camera. A height profile is then created using the triangulation
 principle. This laser technology enables reliable height profile recording on different surfaces.
 
-Official Website: https://www.pepperl-fuchs.com/global/en/classid_9864.htm
+Official Website: https://www.pepperl-fuchs.com/en/products/industrial-sensors/vision-sensors/laser-profile-sensors-gp30031
 
 Datasheet (en): https://files.pepperl-fuchs.com/webcat/navi/productInfo/pds/284586-100009_eng.pdf
 
 ## Usage with ROS
 
-The ROS package `smartrunner_driver` consists of the driver library and three node executables, one for each supported SmartRunner sensor:
+The ROS package `smartrunner_driver` consists of the driver library and node executables for each supported SmartRunner sensor:
 - `smartrunner_2d_node` for the SmartRunner Explorer
 - `smartrunner_3d_stereo_node` for the SmartRunner 3-D Stereo Explorer
-- `smartrunner_3d_tof_node` for the SmartRunner 3-D TOF Explorer
+- `smartrunner_3d_tof_node` (legacy only)
 
 #### Supported platforms:
 
@@ -57,9 +57,9 @@ The following standard ROS messages are supported. The messages contain the meas
 2. Clone the repository in the src folder of your ROS workspace.
 ```git clone https://github.com/PepperlFuchs/pf_smartrunner_ros2_driver.git```
 3. Download the library from the Pepperl+Fuchs site.
-   (https://www.pepperl-fuchs.com/global/en/classid_9866.htm?view=productdetails&prodid=117291#software)
+   (https://www.pepperl-fuchs.com/de-de/products-gp25581/102198#Software)
 4. Unzip the downloaded file and copy the folder "VsxSdk" in to the folder:
-```<home>/ros2_ws/src/pf_smartrunner_ros_driver/smartrunner_driver/lib/```
+```<home>/ros2_ws/src/pf_smartrunner_ros2_driver/smartrunner_driver/lib/```
 4. Install .NET SDK.
    (https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install?tabs=dotnet9&pivots=os-linux-ubuntu-2404)
 5. Change to the workspace directory.
