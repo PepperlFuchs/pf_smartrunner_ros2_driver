@@ -25,7 +25,7 @@ of area images via the integrated area illumination. In the light section method
 object. This is captured at a specific angle by a camera. A height profile is then created using the triangulation
 principle. This laser technology enables reliable height profile recording on different surfaces.
 
-Official Website: https://www.pepperl-fuchs.com/en/products/industrial-sensors/vision-sensors/laser-profile-sensors-gp30031
+Official Website: https://www.pepperl-fuchs.com/en/products/industrial-sensors/vision-sensors/laser-profile-sensors/profile-detection-gp30497
 
 Datasheet (en): https://files.pepperl-fuchs.com/webcat/navi/productInfo/pds/284586-100009_eng.pdf
 
@@ -56,17 +56,17 @@ The following standard ROS messages are supported. The messages contain the meas
 1. Create a ROS workspace (https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html) (e.g. in `<home>/ros2_ws`)
 2. Clone the repository in the src folder of your ROS workspace.
 ```git clone https://github.com/PepperlFuchs/pf_smartrunner_ros2_driver.git```
-3. Download the library from the Pepperl+Fuchs site.
+3. Download the "Device Driver" library from the Pepperl+Fuchs site.
    (https://www.pepperl-fuchs.com/de-de/products-gp25581/102198#Software)
 4. Unzip the downloaded file and copy the folder "VsxSdk" in to the folder:
 ```<home>/ros2_ws/src/pf_smartrunner_ros2_driver/smartrunner_driver/lib/```
-4. Install .NET SDK.
+5. Install .NET SDK.
    (https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install?tabs=dotnet9&pivots=os-linux-ubuntu-2404)
-5. Change to the workspace directory.
+6. Change to the workspace directory.
 ```<home>/ros2_ws/```
-6. Source the ROS2 setup script
-```source /path/to/ros/jazzy/setup.bash```
-7. Start the compilation.
+7. Source the ROS2 installation setup script (adjust to your ROS2 install path).
+```source /opt/ros/jazzy/setup.bash```
+8. Start the compilation.
 ```colcon build```
 
 #### Launch the driver
